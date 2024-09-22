@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, Typography, CardActionArea, Dialog, DialogTitle, DialogContent, Avatar, IconButton, Box } from '@mui/material';
-import { Business, Close, Link as LinkIcon, Person, Work, Lightbulb, Public, TrendingUp, Category, Label } from '@mui/icons-material';
-import './CardComponent.css'; // Make sure this CSS file exists in the same directory
+import { Card, CardContent, CardHeader, Typography, CardActionArea, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, IconButton, Box, Button } from '@mui/material';
+import { Business, Close, Link as LinkIcon, Person, Work, Lightbulb, Public, TrendingUp, Category, Label, Delete } from '@mui/icons-material';
+import './CardComponent.css';
 
-const CardComponent = ({ company }) => {
+const CardComponent = ({ company, onDelete }) => {
   const [open, setOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -12,6 +13,20 @@ const CardComponent = ({ company }) => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleDeleteClick = (event) => {
+    event.stopPropagation();
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete(company.id);
+    setDeleteConfirmOpen(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmOpen(false);
   };
 
   return (
@@ -25,6 +40,11 @@ const CardComponent = ({ company }) => {
               </Avatar>
             }
             title={company.Name}
+            action={
+              <IconButton onClick={handleDeleteClick} color="error">
+                <Delete />
+              </IconButton>
+            }
           />
         </CardActionArea>
       </Card>
@@ -79,6 +99,28 @@ const CardComponent = ({ company }) => {
             <Typography><strong>Keyword:</strong> {company.Keyword}</Typography>
           </Box>
         </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the company "{company.Name}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );
